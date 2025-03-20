@@ -51,7 +51,7 @@ def missing_letter(word):
 def get_syn(word):
     synset = wordnet.synsets(word)
     if synset:
-        syns = [lemma.name() for s in synset[:3] for lemma in s.lemmas()]
+        syns = [lemma.name() for s in synset for lemma in s.lemmas()]
         syns = list(set(syns))
         if syns:
             return random.choice(syns).replace("_", " ")
