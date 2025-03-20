@@ -103,7 +103,7 @@ def create_augmented_dataloader(args, dataset):
     # Here, 'dataset' is the original dataset. You should return a dataloader called 'train_dataloader' -- this
     # dataloader will be for the original training split augmented with 5k random transformed examples from the training set.
     # You may find it helpful to see how the dataloader was created at other place in this code.
-
+    # set same seed for experiment
     transformed = dataset["train"].shuffle(seed=42).select(range(5000))
     transformed = transformed.map(custom_transform, load_from_cache_file=False)
     combined = datasets.concatenate_datasets([dataset["train"], transformed])
