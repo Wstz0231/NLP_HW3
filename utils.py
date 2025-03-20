@@ -21,6 +21,41 @@ def example_transform(example):
     example["text"] = example["text"].lower()
     return example
 
+# possible keyboard typos for vowels
+vowel_key = {'a': ['q', 's', 'z'],
+             'e': ['w', 'd', 'r'],
+             'i': ['u', 'k', 'o'],
+             'o': ['i', 'l', 'p'],
+             'u': ['y', 'j', 'i']}
+
+
+# introduce a vowel typo in the word
+def vowel_typo(word):
+    vowels = [i for i, letter in enumerate(word) if letter.lower() in vowel_key]
+    if vowels:
+        idx = random.choice(vowels)
+        letter = word[idx].lower()
+        typo = random.choice(vowel_key[letter])
+        word = word[:idx] + typo + word[idx+1:]
+    return word
+
+
+# for word with len > 3, introduce missing letter
+def missing_letter(word):
+    if len(word) > 3:
+        idx = random.randint(0, len(word)-1)
+        word = word[:idx] + word[idx+1:]
+    return word
+
+# provide a synonym for the word
+def get_syn(word):
+    synset = wordnet.synsets(word)
+    if synset:
+        syns = [lemma.name() for lemma in synset[0].lemmas()]
+        if syns:
+            return random.choice(syns).replace("_", " ")
+    return None
+
 
 ### Rough guidelines --- typos
 # For typos, you can try to simulate nearest keys on the QWERTY keyboard for some of the letter (e.g. vowels)
@@ -44,8 +79,26 @@ def custom_transform(example):
 
     # You should update example["text"] using your transformation
 
-    raise NotImplementedError
-
+    text = example["text"]
+    words = word_tokenize(text)
+    trans_words = []
+    for word in words:
+        out = word
+        if random.random() < 0.2:
+            choice = random.choice(["syn_replace", "vowel", "missing"])
+            # synonym replacement
+            if choice == "syn_replace":
+                syn = get_syn(word)
+                if syn:
+                    out = syn
+            # vowel typo
+            elif choice == "vowel":
+                out = vowel_typo(word)
+            # missing letter
+            else:
+                out = missing_letter(word)
+        trans_words.append(out)
+    example["text"] = TreebankWordDetokenizer().detokenize(trans_words)
     ##### YOUR CODE ENDS HERE ######
 
     return example
