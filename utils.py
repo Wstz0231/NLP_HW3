@@ -85,15 +85,16 @@ def custom_transform(example):
     trans_words = []
     for word in words:
         out = word
-        if random.random() < 0.2:
-            choice = random.choice(["syn_replace", "vowel", "missing"])
+        rand_num = random.random()
+        if rand_num < 0.3:
+            # choice = random.choice(["syn_replace", "vowel", "missing"])
             # synonym replacement
-            if choice == "syn_replace":
+            if rand_num < 0.2:
                 syn = get_syn(word)
                 if syn:
                     out = syn
             # vowel typo
-            elif choice == "vowel":
+            elif rand_num < 0.25:
                 out = vowel_typo(word)
             # missing letter
             else:
